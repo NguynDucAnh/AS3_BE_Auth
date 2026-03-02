@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: simple-quiz-api
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        value: mongodb+srv://nguyenducanh20040115_db_user:<db_password>@as3.yf8debo.mongodb.net/as3
+      - key: PORT
+        value: 3000
