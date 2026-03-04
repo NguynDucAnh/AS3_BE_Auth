@@ -23,10 +23,11 @@ app.get("/health", (req, res) => res.json({ status: "OK", timestamp: new Date() 
 
 app.get("/", (req, res) => res.json({ message: "SimpleQuiz API running" }));
 
+app.use("/api/quizzes", quizRoutes);
+app.use("/api/questions", questionRoutes);
+// Alias for backward compatibility
 app.use("/quizzes", quizRoutes);
 app.use("/questions", questionRoutes);
-// nếu đề bạn ghi /question thì thêm alias:
-app.use("/question", questionRoutes);
 
 // Error handling middleware (PHẢI ĐẶT CUỐI CÙNG)
 app.use(notFound);

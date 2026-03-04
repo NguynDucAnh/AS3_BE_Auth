@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import Question from '../models/Question.js';
 
-export const SECRET_KEY = "FPT_SECRET_KEY";
+export const SECRET_KEY = process.env.JWT_SECRET || "FPT_SECRET_KEY";
 
 export const verifyToken = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];

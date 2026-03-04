@@ -23,7 +23,10 @@ export async function getQuestionById(req, res) {
 
 export async function createQuestion(req, res) {
   try {
-    const created = await Question.create(req.body);
+    const created = await Question.create({
+      ...req.body,
+      author: req.user.id
+    });
     res.status(201).json(created);
   } catch (e) {
     res.status(400).json({ message: e.message });

@@ -123,3 +123,53 @@ export async function addManyQuestionsToQuiz(req, res) {
     res.status(400).json({ message: e.message });
   }
 }
+
+// DELETE /quizzes/:quizId/questions/:questionId -> xóa 1 câu khỏi quiz
+export async function deleteQuestionFromQuiz(req, res) {
+  try {
+    const quiz = await Quiz.findById(req.params.quizId);
+    if (!quiz) return res.status(404).json({ message: "Quiz not found" });
+
+    const questionIndex = quiz.questions.indexOf(req.params.questionId);
+    if (questionIndex === -1) {
+      return res.status(404).json({ message: "Question not found in this quiz" });
+    }
+
+    quiz.questions.splice(questionIndex, 1);
+    await quiz.save();
+
+    const populated = await Quiz.findById(req.params.quizId).populate("questions");
+    res.json({
+      message: "Question removed from quiz",
+      quiz: populated
+    });
+  } catch (e) {
+    res.status(400).json({ message: e.message });
+  }
+}
+
+// POST /quizzes/:quizId/questions/:questionId -> thêm 1 câu có sẵn vào quiz
+export async function addQuestionToQuiz(req, res) {
+  try {
+    const quiz = await Quiz.findById(req.params.quizId);
+    if (!quiz) return res.status(404).json({ message: "Quiz not found" });
+
+    const question = await Question.findById(req.params.questionId);
+    if (!question) return res.status(404).json({ message: "Question not found" });
+
+    if (quiz.questions.includes(req.params.questionId)) {
+      return res.status(400).json({ message: "Question already in this quiz" });
+    }
+
+    quiz.questions.push(req.params.questionId);
+    await quiz.save();
+
+    const populated = await Quiz.findById(req.params.quizId).populate("questions");
+    res.status(201).json({
+      message: "Question added to quiz successfully",
+      quiz: populated
+    });
+  } catch (e) {
+    res.status(400).json({ message: e.message });
+  }
+}
