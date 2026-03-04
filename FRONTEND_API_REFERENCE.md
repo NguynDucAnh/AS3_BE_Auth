@@ -360,7 +360,7 @@ export const quizAPI = {
 | Register | POST | `/api/auth/register` | ❌ |
 | Login | POST | `/api/auth/login` | ❌ |
 | Get Users | GET | `/api/users` | ✅ Admin |
-| Get User | GET | `/api/users/:userId` | ❌ |
+| Get User | GET | `/api/users/:userId` | ✅ Admin |
 | Update User | PUT | `/api/users/:userId` | ✅ Admin |
 | Delete User | DELETE | `/api/users/:userId` | ✅ Admin |
 | Get Questions | GET | `/api/questions` | ❌ |
@@ -377,6 +377,35 @@ export const quizAPI = {
 | Remove Question | DELETE | `/api/quizzes/:quizId/questions/:qId` | ✅ |
 | Add Single Question | POST | `/api/quizzes/:quizId/question` | ✅ |
 | Add Multiple Questions | POST | `/api/quizzes/:quizId/questions` | ✅ |
+
+---
+
+## ⚠️ Error Handling
+
+All errors follow a consistent format:
+
+```javascript
+try {
+  const response = await fetch(url, options);
+  
+  if (!response.ok) {
+    const error = await response.json();
+    // error.message contains the safe error message
+    throw new Error(error.message);
+  }
+  
+  return await response.json();
+} catch (err) {
+  console.error(err.message); // Safe error from server
+}
+```
+
+**Error Codes:**
+- `400` - Validation error or bad request
+- `401` - Missing authentication token
+- `403` - Invalid token or insufficient permissions
+- `404` - Resource not found
+- `500` - Server error (generic message returned)
 
 ---
 
@@ -450,3 +479,61 @@ Header: Authorization: Bearer <YOUR_TOKEN>
   "updatedAt": "Date"
 }
 ```
+
+---
+
+## 🛡️ Security & Best Practices
+
+### Error Responses are Safe
+All error responses follow the same format: `{ message: "string" }`
+- ✅ Never exposes error objects or internal details
+- ✅ Messages are generic and user-friendly
+- ✅ Detailed errors are logged on the server (console)
+- ✅ Perfect for displaying to users without leaking information
+
+### Authentication Best Practices
+```javascript
+// 1. Save token after login
+localStorage.setItem('token', loginResponse.token);
+
+// 2. Always include in protected requests
+const headers = {
+  'Authorization': `Bearer ${localStorage.getItem('token')}`
+};
+
+// 3. Handle token expiration (24 hours)
+// Implement auto-logout after 24 hours
+setTimeout(() => {
+  localStorage.removeItem('token');
+  // Redirect to login
+}, 24 * 60 * 60 * 1000);
+
+// 4. Clear token on logout
+const logout = () => {
+  localStorage.removeItem('token');
+};
+```
+
+### Admin-Only Endpoints
+Users must be authenticated AND have `admin: true`:
+- `GET /api/users` - List all users
+- `GET /api/users/:userId` - Get any user
+- `PUT /api/users/:userId` - Update any user
+- `DELETE /api/users/:userId` - Delete any user
+
+Regular users cannot access these endpoints.
+
+### Author-Only Endpoints
+Users can only edit/delete their own questions:
+- `PUT /api/questions/:questionId` - Must be the author
+- `DELETE /api/questions/:questionId` - Must be the author
+
+The backend verifies the author before allowing changes.
+
+### Validation
+All inputs are validated by the server:
+- ✅ Questions require minimum 2 options
+- ✅ `correctAnswerIndex` must be within options range
+- ✅ Usernames must be unique
+- ✅ MongoDB ObjectIds are validated
+- ✅ Invalid data returns 400 Bad Request

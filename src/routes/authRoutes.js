@@ -10,7 +10,7 @@ router.post('/login', authController.login);
 
 // User endpoints
 router.get('/users', verifyAdmin, authController.getAllUsers);
-router.get('/users/:userId', authController.getUserById);
+router.get('/users/:userId', verifyAdmin, authController.getUserById);
 router.put('/users/:userId', verifyAdmin, authController.updateUser);
 router.delete('/users/:userId', verifyAdmin, authController.deleteUser);
 

@@ -488,40 +488,56 @@ GET /
 
 ## ❌ Error Responses
 
-### Unauthorized (No Token)
+### Unauthorized (No Token) - 401
 ```json
 {
   "message": "You are not authenticated!"
 }
 ```
 
-### Forbidden (Invalid Token)
+### Forbidden (Invalid Token) - 403
 ```json
 {
   "message": "Token is not valid!"
 }
 ```
 
-### Not Found
+### Forbidden (Admin Only) - 403
+```json
+{
+  "message": "You are not authorized (Admin only)!"
+}
+```
+
+### Not Found - 404
 ```json
 {
   "message": "Quiz not found"
 }
 ```
 
-### Validation Error
+### Validation Error - 400
 ```json
 {
   "message": "options must have at least 2 items"
 }
 ```
 
-### Conflict (Question Already in Quiz)
+### Conflict - 400
 ```json
 {
   "message": "Question already in this quiz"
 }
 ```
+
+### Server Error - 500
+```json
+{
+  "message": "Login failed"
+}
+```
+
+**Note:** Error responses are safe and never expose internal details or error objects. Details are logged on the server for debugging.
 
 ---
 
@@ -581,6 +597,7 @@ curl -X POST http://localhost:3000/api/questions \
 |----------|--------------|------|
 | Register/Login | ❌ | Public |
 | Get Users | ✅ | Admin |
+| Get User by ID | ✅ | Admin |
 | Create User | ❌ | Public |
 | Update/Delete User | ✅ | Admin |
 | Get Questions | ❌ | Public |
@@ -589,3 +606,31 @@ curl -X POST http://localhost:3000/api/questions \
 | Get Quizzes | ❌ | Public |
 | Create/Update/Delete Quiz | ✅ | Any authenticated user |
 | Add Questions to Quiz | ✅ | Any authenticated user |
+
+---
+
+## 🛡️ Security Best Practices
+
+### Error Handling
+- ✅ **No sensitive information exposed** - Error messages are generic and safe
+- ✅ **Server-side logging** - Detailed errors logged to console for debugging
+- ✅ **Consistent error format** - All errors return `{ message: "string" }`
+- ✅ **Never expose error objects** - Prevents leaking internal details
+
+### Authentication
+- ✅ **JWT-based** - Stateless authentication
+- ✅ **Bearer tokens** - Sent in `Authorization: Bearer <token>` header
+- ✅ **1-day expiration** - Tokens expire after 24 hours
+- ✅ **Secure password hashing** - bcryptjs with salt rounds = 10
+
+### Database
+- ✅ **Input validation** - All fields validated by Mongoose schemas
+- ✅ **Unique constraints** - Usernames must be unique
+- ✅ **Proper error codes** - 400, 404, 403, 500 used appropriately
+- ✅ **MongoDB operators secured** - Protected from injection attacks
+
+### API Design
+- ✅ **RESTful conventions** - Proper HTTP methods and status codes
+- ✅ **Request validation** - Content-Type checked for JSON
+- ✅ **CORS enabled** - Cross-origin requests allowed safely
+- ✅ **Request logging** - Morgan middleware logs all requests

@@ -16,9 +16,8 @@ export const register = async (req, res) => {
     const savedUser = await newUser.save();
     res.status(201).json({ username: savedUser.username, admin: savedUser.admin });
   } catch (err) {
-    // THÊM 2 DÒNG NÀY ĐỂ IN LỖI RA TERMINAL
-    console.error("LỖI ĐĂNG KÝ BỊ CRASH CHI TIẾT:", err.message);
-    res.status(500).json({ message: err.message, chiTiet: err });
+    console.error("Registration error:", err.message);
+    res.status(500).json({ message: err.message || "Registration failed" });
   }
 };
 
@@ -34,7 +33,8 @@ export const login = async (req, res) => {
     
     res.status(200).json({ username: user.username, admin: user.admin, token });
   } catch (err) {
-    res.status(500).json(err);
+    console.error("Login error:", err.message);
+    res.status(500).json({ message: "Login failed" });
   }
 };
 
@@ -48,7 +48,8 @@ export const getAllUsers = async (req, res) => {
     }));
     res.status(200).json(usersData);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("Get all users error:", err.message);
+    res.status(500).json({ message: err.message || "Failed to fetch users" });
   }
 };
 
@@ -63,7 +64,8 @@ export const getUserById = async (req, res) => {
       admin: user.admin
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("Get user by ID error:", err.message);
+    res.status(500).json({ message: err.message || "Failed to fetch user" });
   }
 };
 
@@ -78,7 +80,7 @@ export const updateUser = async (req, res) => {
     const user = await User.findByIdAndUpdate(
       req.params.userId,
       updateData,
-      { new: true }
+      { new: true, runValidators: true }
     );
     
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -89,7 +91,8 @@ export const updateUser = async (req, res) => {
       admin: user.admin
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("Update user error:", err.message);
+    res.status(500).json({ message: err.message || "Update failed" });
   }
 };
 
@@ -101,6 +104,7 @@ export const deleteUser = async (req, res) => {
     
     res.status(200).json({ message: "User deleted successfully", userId: user._id });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("Delete user error:", err.message);
+    res.status(500).json({ message: err.message || "Delete failed" });
   }
 };
