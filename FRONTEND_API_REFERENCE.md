@@ -52,7 +52,7 @@ const headers = {
 ### Get All Users (Admin Only)
 ```javascript
 const getAllUsers = async () => {
-  const response = await fetch('http://localhost:3000/api/users', {
+  const response = await fetch('http://localhost:3000/api/auth/users', {
     headers: { 'Authorization': `Bearer ${getToken()}` }
   });
   return response.json();
@@ -62,7 +62,7 @@ const getAllUsers = async () => {
 ### Get User by ID
 ```javascript
 const getUser = async (userId) => {
-  const response = await fetch(`http://localhost:3000/api/users/${userId}`);
+  const response = await fetch(`http://localhost:3000/api/auth/users/${userId}`);
   return response.json();
 };
 ```
@@ -70,7 +70,7 @@ const getUser = async (userId) => {
 ### Update User (Admin Only)
 ```javascript
 const updateUser = async (userId, updates) => {
-  const response = await fetch(`http://localhost:3000/api/users/${userId}`, {
+  const response = await fetch(`http://localhost:3000/api/auth/users/${userId}`, {
     method: 'PUT',
     headers: { 'Authorization': `Bearer ${getToken()}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(updates) // { username, admin }
@@ -82,7 +82,7 @@ const updateUser = async (userId, updates) => {
 ### Delete User (Admin Only)
 ```javascript
 const deleteUser = async (userId) => {
-  const response = await fetch(`http://localhost:3000/api/users/${userId}`, {
+  const response = await fetch(`http://localhost:3000/api/auth/users/${userId}`, {
     method: 'DELETE',
     headers: { 'Authorization': `Bearer ${getToken()}` }
   });
@@ -315,10 +315,10 @@ export const authAPI = {
 
 // Users
 export const userAPI = {
-  getAllUsers: () => apiCall('/api/users'),
-  getUser: (userId) => apiCall(`/api/users/${userId}`),
-  updateUser: (userId, updates) => apiCall(`/api/users/${userId}`, 'PUT', updates),
-  deleteUser: (userId) => apiCall(`/api/users/${userId}`, 'DELETE'),
+  getAllUsers: () => apiCall('/api/auth/users'),
+  getUser: (userId) => apiCall(`/api/auth/users/${userId}`),
+  updateUser: (userId, updates) => apiCall(`/api/auth/users/${userId}`, 'PUT', updates),
+  deleteUser: (userId) => apiCall(`/api/auth/users/${userId}`, 'DELETE'),
 };
 
 // Questions
@@ -359,10 +359,10 @@ export const quizAPI = {
 |----------|--------|----------|----------------|
 | Register | POST | `/api/auth/register` | ❌ |
 | Login | POST | `/api/auth/login` | ❌ |
-| Get Users | GET | `/api/users` | ✅ Admin |
-| Get User | GET | `/api/users/:userId` | ✅ Admin |
-| Update User | PUT | `/api/users/:userId` | ✅ Admin |
-| Delete User | DELETE | `/api/users/:userId` | ✅ Admin |
+| Get Users | GET | `/api/auth/users` | ✅ Admin |
+| Get User | GET | `/api/auth/users/:userId` | ✅ Admin |
+| Update User | PUT | `/api/auth/users/:userId` | ✅ Admin |
+| Delete User | DELETE | `/api/auth/users/:userId` | ✅ Admin |
 | Get Questions | GET | `/api/questions` | ❌ |
 | Get Question | GET | `/api/questions/:id` | ❌ |
 | Create Question | POST | `/api/questions` | ✅ |
@@ -516,10 +516,10 @@ const logout = () => {
 
 ### Admin-Only Endpoints
 Users must be authenticated AND have `admin: true`:
-- `GET /api/users` - List all users
-- `GET /api/users/:userId` - Get any user
-- `PUT /api/users/:userId` - Update any user
-- `DELETE /api/users/:userId` - Delete any user
+- `GET /api/auth/users` - List all users
+- `GET /api/auth/users/:userId` - Get any user
+- `PUT /api/auth/users/:userId` - Update any user
+- `DELETE /api/auth/users/:userId` - Delete any user
 
 Regular users cannot access these endpoints.
 

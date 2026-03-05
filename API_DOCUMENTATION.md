@@ -62,7 +62,7 @@ Content-Type: application/json
 
 ### Get All Users
 ```http
-GET /api/users
+GET /api/auth/users
 Authorization: Bearer <ADMIN_TOKEN>
 ```
 **Response:** `200 OK`
@@ -83,7 +83,7 @@ Authorization: Bearer <ADMIN_TOKEN>
 
 ### Get User By ID
 ```http
-GET /api/users/:userId
+GET /api/auth/users/:userId
 ```
 **Response:** `200 OK`
 ```json
@@ -96,7 +96,7 @@ GET /api/users/:userId
 
 ### Update User
 ```http
-PUT /api/users/:userId
+PUT /api/auth/users/:userId
 Authorization: Bearer <ADMIN_TOKEN>
 Content-Type: application/json
 
@@ -116,7 +116,7 @@ Content-Type: application/json
 
 ### Delete User
 ```http
-DELETE /api/users/:userId
+DELETE /api/auth/users/:userId
 Authorization: Bearer <ADMIN_TOKEN>
 ```
 **Response:** `200 OK`
